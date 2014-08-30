@@ -284,12 +284,6 @@
     <Compile Include="src\initialize.h">
       <SubType>compile</SubType>
     </Compile>
-    <Compile Include="src\lcd.c">
-      <SubType>compile</SubType>
-    </Compile>
-    <Compile Include="src\lcd.h">
-      <SubType>compile</SubType>
-    </Compile>
     <Compile Include="src\Menu.c">
       <SubType>compile</SubType>
     </Compile>

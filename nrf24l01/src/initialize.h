@@ -34,10 +34,20 @@
 #define LED_Green_R(_STATUS_)	Out_Set(LED_Green_R_PORT,LED_Green_R_PIN_bp,_STATUS_ ) 
 #define LED_White_L(_STATUS_)	Out_Set(LED_White_L_PORT,LED_White_L_PIN_bp,_STATUS_ ) 
 #define LED_Green_L(_STATUS_)   Out_Set(LED_Green_L_PORT,LED_Green_L_PIN_bp,_STATUS_ ) 
- 
-#define LED_Red_PIN_bm		PIN0_bm
-#define LED_Yellow_PIN_bm	PIN4_bm
-#define LED_Blue_PIN_bm		PIN1_bm
+#define LED_Red(_STATUS_)		Out_Set(LED_Red_PORT,LED_Red_PIN_bp,_STATUS_ )
+#define LED_White(_STATUS_)    Out_Set(LED_White_PORT,LED_White_PIN_bp,_STATUS_ ) 
+#define LED_Orange(_STATUS_)	    Out_Set(LED_Orange_PORT,LED_Orange_PIN_bp,_STATUS_ ) 
+
+#define LED_Red_PORT		PORTD
+#define LED_Red_PIN_bm		PIN4_bm
+#define LED_Red_PIN_bp		PIN4_bp
+#define LED_White_PORT		PORTA
+#define LED_White_PIN_bm	PIN0_bm
+#define LED_White_PIN_bp	PIN0_bp
+#define LED_Orange_PORT		PORTR
+#define LED_Orange_PIN_bm		PIN1_bm
+#define LED_Orange_PIN_bp		PIN1_bp
+
 
 #define Buzzer_PORT				PORTD
 #define Buzzer_PIN_bp			PIN7_bp
@@ -49,14 +59,19 @@
 #define Wireless_L_PORT PORTE
 #define Wireless_R_USART USARTC0
 #define Wireless_L_USART USARTE0
+#define USART_M			 USARTD0
 #define Wireless_TX_R_PIN_bm PIN3_bm
 #define Wireless_RX_R_PIN_bm PIN2_bm
 #define Wireless_TX_L_PIN_bm PIN3_bm
 #define Wireless_RX_L_PIN_bm PIN2_bm
+#define USART_M_TX_PIN_bm    PIN3_bm
+#define USART_M_RX_PIN_bm    PIN2_bm
 #define USART_R_RXC_vect USARTC0_RXC_vect
 #define USART_R_DRE_vect USARTC0_DRE_vect
 #define USART_L_RXC_vect USARTE0_RXC_vect
 #define USART_L_DRE_vect USARTE0_DRE_vect
+#define USART_M_RXC_vect USARTD0_RXC_vect
+#define USART_M_DRE_vect USARTD0_DRE_vect
 
 #define NRF24L01_R_SPI			SPIC
 #define NRF24L01_R_PORT			PORTC

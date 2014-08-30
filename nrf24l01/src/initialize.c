@@ -25,13 +25,13 @@ void En_RC32M(void)
 
 void PORT_init(void)
 {
-	PORTA_DIR = LED_Red_PIN_bm;
+	PORTA_DIR = LED_White_PIN_bm;
 	PORTB_DIR = 0XFF;//Segment_R 
 	PORTC_DIR = NRF24L01_R_CE_LINE | NRF24L01_R_CS_LINE | NRF24L01_R_MOSI_LINE | NRF24L01_R_SCK_LINE | Wireless_TX_R_PIN_bm;
 			PORTC_PIN0CTRL |= PORT_ISC_LEVEL_gc;
 			PORTC_INTCTRL  |= PORT_INT0LVL_LO_gc;
 			PORTC_INT0MASK |= PIN0_bm;
-	PORTD_DIR = LED_Green_L_PIN_bm | LED_White_L_PIN_bm | LED_Green_R_PIN_bm | LED_White_R_PIN_bm | Buzzer_PIN_bm | LED_Yellow_PIN_bm;
+	PORTD_DIR = LED_Green_L_PIN_bm | LED_White_L_PIN_bm | LED_Green_R_PIN_bm | LED_White_R_PIN_bm | Buzzer_PIN_bm | LED_Red_PIN_bm | USART_M_TX_PIN_bm ;
 	PORTE_DIR = NRF24L01_L_CE_LINE | NRF24L01_L_CS_LINE | NRF24L01_L_MOSI_LINE | NRF24L01_L_SCK_LINE | Wireless_TX_L_PIN_bm;
 			PORTE_PIN0CTRL |= PORT_ISC_LEVEL_gc;
 			PORTE_INTCTRL  |= PORT_INT0LVL_LO_gc;
@@ -39,7 +39,9 @@ void PORT_init(void)
 	PORTF_DIR = 0xFF;//Segment_L
 	Wireless_R_PORT.OUTSET=Wireless_TX_R_PIN_bm;//CHERA BARAYE L NIST?
 	Wireless_L_PORT.OUTSET=Wireless_TX_L_PIN_bm;
-	PORTR_DIR = LED_Blue_PIN_bm;
+	PORTD.OUTSET = USART_M_TX_PIN_bm;
+	
+	PORTR_DIR = LED_Orange_PIN_bm;
 };
 
 #define TIMERD0_PER 0x7D
@@ -108,7 +110,7 @@ void USARTD0_init(void)
 		//usart_set_dre_interrupt_level(&USARTD0_conf,USART_INT_LVL_LO);
 		usart_set_baudrate(&USARTD0_conf,USARTD0_BUADRATE,F_CPU);
 		usart_tx_enable(&USARTD0_conf);
-		//usart_rx_enable(&USARTD0_conf);
+		usart_rx_enable(&USARTD0_conf);
 	}
 	
 void OUT_Bling(PORT_t *OUT_PORT,uint8_t OUT_PIN_bp,uint8_t Speed,uint32_t *Time_ON,uint32_t time_ms)

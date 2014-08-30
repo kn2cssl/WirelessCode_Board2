@@ -8,7 +8,6 @@
 #include "nrf24l01_L.h"
 #include "nrf24l01_R.h"
 #include "Menu.h"
-#include "lcd.h"
 #include "transmitter.h"
 
 char Buf_Tx_R[Max_Robot][_Buffer_Size] ;
@@ -28,7 +27,6 @@ int main (void)
 {
     En_RC32M();
     PORT_init();
-	//LCDInit();
     TimerD0_init();
     PMIC_CTRL |=PMIC_LOLVLEN_bm|PMIC_MEDLVLEN_bm;
 
@@ -85,9 +83,17 @@ int main (void)
 	
 	
     while (1)
-    {	 
+    {	
+		//LED_White_L_PORT.OUTTGL = LED_White_L_PIN_bm;
+		//LED_Green_L_PORT.OUTSET = LED_Green_L_PIN_bm;
+		//LED_White_R_PORT.OUTTGL= LED_White_R_PIN_bm;
+		//LED_Green_R_PORT.OUTSET = LED_Green_R_PIN_bm;
+		
+		
+		
+		//_delay_ms(100);
 		//usart_putchar(&Wireless_R_USART,START_BYTE0);
-		//usart_putchar(&Wireless_R_USART,START_BYTE1);
+		//usart_putchar(&USARTD0,START_BYTE1);
 		//for (uint8_t i=0;i<Max_Robot;i++)
 			//for (uint8_t j = 0; j<Max_SendPacket_Lenght; j++)
 				//usart_putchar(&Wireless_R_USART,Buf_Rx_R[i][j]);
@@ -169,7 +175,7 @@ ISR(PRX_R)
 {
 	wdt_reset();
     uint8_t status_R = NRF24L01_R_ReadReg(STATUSe);
-
+    LED_White_PORT.OUTTGL  = LED_White_PIN_bm;
     if((status_R & _RX_DR) == _RX_DR)
     { 
         LED_White_R_PORT.OUTTGL = LED_White_R_PIN_bm;
@@ -202,7 +208,7 @@ ISR(PRX_R)
 ISR(PRX_L)
 {
 	wdt_reset();
-    uint8_t status_L = NRF24L01_L_WriteReg( W_REGISTER|STATUSe,_TX_DS|_MAX_RT);
+    uint8_t status_L = NRF24L01_L_ReadReg(STATUSe);
     if((status_L & _RX_DR) == _RX_DR)
     {
 		LED_White_L_PORT.OUTTGL = LED_White_L_PIN_bm;
@@ -220,14 +226,13 @@ ISR(PRX_L)
             //4) if there are more data in RX FIFO, repeat from step 1).
         } while((NRF24L01_L_ReadReg(FIFO_STATUS)&RX_EMPTY) == 0x00);
     }
-
+    status_L = NRF24L01_L_WriteReg(W_REGISTER|STATUSe,_TX_DS|_MAX_RT);
     if((status_L&_TX_DS) == _TX_DS)
     {
         LED_Green_L_PORT.OUTTGL = LED_Green_L_PIN_bm;
     }
     if ((status_L&_MAX_RT) == _MAX_RT)
     {
-        //LED_Green_R_PORT.OUTTGL = LED_Green_R_PIN_bm;
 		NRF24L01_L_Flush_TX();
     }
 }
@@ -235,6 +240,7 @@ ISR(PRX_L)
 ISR(USART_R_RXC_vect) 
 {
     GetNewData(USARTC0_DATA);
+	
 }
 
 ISR(USART_R_DRE_vect) //Wireless_R_USART 
@@ -246,7 +252,7 @@ ISR(USART_L_RXC_vect)
 {
     char data;
     data=USARTE0_DATA;
-
+    LED_Red_PORT.OUTTGL = LED_Red_PIN_bm;
 
     //switch (data)
     //{
@@ -293,11 +299,11 @@ ISR(USART_L_DRE_vect) //Wireless_R_USART
 {
 
 }
-ISR(USARTD0_DRE_vect)
+ISR(USART_M_DRE_vect)
 {
 	
 }
-ISR(USARTD0_RXC_vect)//usart test
+ISR(USART_M_RXC_vect)//usart test
 {
-	
+	LED_Orange_PORT.OUTTGL   = LED_Orange_PIN_bm;
 }
