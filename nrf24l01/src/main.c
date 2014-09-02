@@ -67,7 +67,6 @@ int main (void)
     NRF24L01_L_WriteReg(W_REGISTER | FEATURE,0x06);//0x06
     NRF24L01_L_CE_HIGH;
 
-
     NRF24L01_R_CE_LOW;
     NRF24L01_R_Init_milad(_RX_MODE, _CH_R, _2Mbps, Address, _Address_Width, _Buffer_Size, RF_PWR_MAX);
     NRF24L01_R_WriteReg(W_REGISTER | DYNPD,0x07);
@@ -80,25 +79,8 @@ int main (void)
     {
         Robot_D_tmp[i].RID=12;
     }
-	
-	
     while (1)
     {	
-		//LED_White_L_PORT.OUTTGL = LED_White_L_PIN_bm;
-		//LED_Green_L_PORT.OUTSET = LED_Green_L_PIN_bm;
-		//LED_White_R_PORT.OUTTGL= LED_White_R_PIN_bm;
-		//LED_Green_R_PORT.OUTSET = LED_Green_R_PIN_bm;
-		
-		
-		
-		//_delay_ms(100);
-		//usart_putchar(&Wireless_R_USART,START_BYTE0);
-		//usart_putchar(&USARTD0,START_BYTE1);
-		//for (uint8_t i=0;i<Max_Robot;i++)
-			//for (uint8_t j = 0; j<Max_SendPacket_Lenght; j++)
-				//usart_putchar(&Wireless_R_USART,Buf_Rx_R[i][j]);
-		//for (uint8_t i=0;i<_Buffer_Size;i++)
-           //usart_putchar(&USARTE0,Buf_Rx_R[0][i]);
         for(uint8_t i=0;i<12;i++)
         {
             Buf_Tx_R[i][11] = Menu_Num;
@@ -106,26 +88,6 @@ int main (void)
             Buf_Tx_R[i][13] = (int)(ki*100);
             Buf_Tx_R[i][14] = (int)(kd*100);
         }
-
-        if(Menu_PORT.IN & Menu_Side_Select_PIN_bm)
-        {
-			 //count = sprintf(str,"%d,%d\r",
-			 //((Buf_Rx_R[0][1+(Menu_Num*2)]<<8)&0x0ff00)|(Buf_Rx_R[0][0+(Menu_Num*2)]&0x00ff),
-			 //((Buf_Rx_R[0][11+(Menu_Num*2)]<<8)&0x0ff00)|(Buf_Rx_R[0][10+(Menu_Num*2)]&0x00ff));
-			 
-            //for (uint8_t i=0;i<count;i++)
-                //usart_putchar(&USARTE0,str[i]);	
-        }
-		
-        if(Menu_PORT.IN & Menu_Set_PIN_bm)
-        {
-            //count = sprintf(str,"kp: %d      ki: %d      kd: %d\r",(int)(kp*100),(int)(ki*100),(int)(kd*100));
-
-            //for (uint8_t i=0;i<count;i++)
-                //usart_putchar(&USARTE0,str[i]);
-        }
-		
-        //_delay_ms(20);
 		_delay_us(1);
     }
 }
@@ -172,7 +134,7 @@ ISR(TCD0_OVF_vect)
 }
 
 ISR(PRX_R)
-{
+{   
 	wdt_reset();
     uint8_t status_R = NRF24L01_R_ReadReg(STATUSe);
     LED_White_PORT.OUTTGL  = LED_White_PIN_bm;
@@ -184,9 +146,9 @@ ISR(PRX_R)
 			wdt_reset();
 			//strcat(Buf_Tx_R[0] ,"123456789abcdefghijklmnopqrstuvw");
 			tmprid = ((status_R&0x0e)>>1);
-            NRF24L01_R_WriteRegBuf(W_ACK_PAYLOAD + tmprid, Buf_Tx_R[tmprid], _Buffer_Size);
+            NRF24L01_R_WriteRegBuf(W_ACK_PAYLOAD + tmprid, Buf_Tx_R[tmprid+6], _Buffer_Size);
             //1) read payload through SPI,
-            NRF24L01_R_Read_RX_Buf(Buf_Rx_R[tmprid], _Buffer_Size);
+            NRF24L01_R_Read_RX_Buf(Buf_Rx_R[tmprid+6], _Buffer_Size);
             //2) clear RX_DR IRQ,
             status_R=NRF24L01_R_WriteReg(W_REGISTER | STATUSe, _RX_DR );
             //3) read FIFO_STATUS to check if there are more payloads available in RX FIFO,
@@ -206,7 +168,7 @@ ISR(PRX_R)
 }
 
 ISR(PRX_L)
-{
+{   
 	wdt_reset();
     uint8_t status_L = NRF24L01_L_ReadReg(STATUSe);
     if((status_L & _RX_DR) == _RX_DR)
@@ -217,9 +179,9 @@ ISR(PRX_L)
 			wdt_reset();
 			//Buf_Tx_R[0] = "123456789abcdefghijklmnopqrstuvw";
 			tmprid = ((status_L&0x0e)>>1);
-            NRF24L01_L_WriteRegBuf(W_ACK_PAYLOAD + tmprid,Buf_Tx_R[tmprid+3], _Buffer_Size);
+            NRF24L01_L_WriteRegBuf(W_ACK_PAYLOAD + tmprid,Buf_Tx_R[tmprid+9], _Buffer_Size);
             //1) read payload through SPI,
-            NRF24L01_L_Read_RX_Buf(Buf_Rx_R[tmprid+3], _Buffer_Size);
+            NRF24L01_L_Read_RX_Buf(Buf_Rx_R[tmprid+9], _Buffer_Size);
             //2) clear RX_DR IRQ,
             status_L=NRF24L01_L_WriteReg(W_REGISTER | STATUSe, _RX_DR );
             //3) read FIFO_STATUS to check if there are more payloads available in RX FIFO,
@@ -240,7 +202,6 @@ ISR(PRX_L)
 ISR(USART_R_RXC_vect) 
 {
     GetNewData(USARTC0_DATA);
-	
 }
 
 ISR(USART_R_DRE_vect) //Wireless_R_USART 
@@ -250,49 +211,7 @@ ISR(USART_R_DRE_vect) //Wireless_R_USART
 
 ISR(USART_L_RXC_vect)
 {
-    char data;
-    data=USARTE0_DATA;
-    LED_Red_PORT.OUTTGL = LED_Red_PIN_bm;
-
-    //switch (data)
-    //{
-    //case 'p':
-        //kp=kp+0.01;
-        //count = sprintf(str,"kp: %d\r",(int)(kp*100));
-        //for (uint8_t i=0;i<count;i++)
-            //usart_putchar(&USARTE0,str[i]);
-        //break;
-    //case 'o':
-        //ki=ki+0.05;
-        //count = sprintf(str,"ki: %d\r",(int)(ki*100));
-        //for (uint8_t i=0;i<count;i++)
-            //usart_putchar(&USARTE0,str[i]);
-        //break;
-    //case 'i':
-        //kd=kd+0.01;
-        //count = sprintf(str,"kd: %d\r",(int)(kd*100));
-        //for (uint8_t i=0;i<count;i++)
-            //usart_putchar(&USARTE0,str[i]);
-        //break;
-    //case 'l':
-        //kp=kp-0.01;
-        //count = sprintf(str,"kp: %d\r",(int)(kp*100));
-        //for (uint8_t i=0;i<count;i++)
-            //usart_putchar(&USARTE0,str[i]);
-        //break;
-    //case 'k':
-        //ki=ki-0.05;
-        //count = sprintf(str,"ki: %d\r",(int)(ki*100));
-        //for (uint8_t i=0;i<count;i++)
-            //usart_putchar(&USARTE0,str[i]);
-        //break;
-    //case 'j':
-        //kd=kd-0.01;
-        //count = sprintf(str,"kd: %d\r",(int)(kd*100));
-        //for (uint8_t i=0;i<count;i++)
-            //usart_putchar(&USARTE0,str[i]);
-        //break;
-    //};
+    
 
 }
 ISR(USART_L_DRE_vect) //Wireless_R_USART
