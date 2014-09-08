@@ -187,6 +187,7 @@ static void GetNewData(uint8_t data)
 						
 						if (Robot_D[i].RID<Max_Robot)
 						{
+							LED_White_PORT.OUTTGL = LED_White_R_PIN_bm;
 							Buf_Tx_R[Robot_D[i].RID][0] = Robot_D[i].RID;
 							Buf_Tx_R[Robot_D[i].RID][1] = Robot_D[i].M0.Bytes[1];
 							Buf_Tx_R[Robot_D[i].RID][2] = Robot_D[i].M0.Bytes[0];

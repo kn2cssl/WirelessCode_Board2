@@ -19,7 +19,7 @@ char Address[_Address_Width] = { 0x11, 0x22, 0x33, 0x44, 0x55};
 char str[40];
 uint8_t count;
 uint8_t flg;
-float P_temp,I_temp,D_temp,P,I,D,a=0,ki=0.65,kp=0.15,kd=0.05,M1,M1_temp;//ki=1.34,kp=1,kd=0.02,;
+float P_temp,I_temp,D_temp,P,I,D,a=0,ki=0,kp=0.2,kd=0.07,M1,M1_temp;//ki=1.34,kp=1,kd=0.02,;
 
 uint16_t pck_timeout[Max_Robot];	
 
@@ -80,7 +80,9 @@ int main (void)
         Robot_D_tmp[i].RID=12;
     }
     while (1)
-    {	
+     {	
+		//Buf_Tx_R[7][7] = 0xFF;
+		//Buf_Tx_R[7][8] = 0X01;
         for(uint8_t i=0;i<12;i++)
         {
             Buf_Tx_R[i][11] = Menu_Num;
@@ -137,16 +139,20 @@ ISR(PRX_R)
 {   
 	wdt_reset();
     uint8_t status_R = NRF24L01_R_ReadReg(STATUSe);
-    LED_White_PORT.OUTTGL  = LED_White_PIN_bm;
+    
     if((status_R & _RX_DR) == _RX_DR)
     { 
         LED_White_R_PORT.OUTTGL = LED_White_R_PIN_bm;
         do
         {
 			wdt_reset();
+			//Buf_Tx_R[8][5] = 0xFF;
+			//Buf_Tx_R[8][6] = 0X01;
 			//strcat(Buf_Tx_R[0] ,"123456789abcdefghijklmnopqrstuvw");
 			tmprid = ((status_R&0x0e)>>1);
+			usart_putchar(&USARTD0,tmprid);
             NRF24L01_R_WriteRegBuf(W_ACK_PAYLOAD + tmprid, Buf_Tx_R[tmprid+6], _Buffer_Size);
+			
             //1) read payload through SPI,
             NRF24L01_R_Read_RX_Buf(Buf_Rx_R[tmprid+6], _Buffer_Size);
             //2) clear RX_DR IRQ,
@@ -202,6 +208,7 @@ ISR(PRX_L)
 ISR(USART_R_RXC_vect) 
 {
     GetNewData(USARTC0_DATA);
+	LED_Red_PORT.OUTTGL = LED_Red_PIN_bm;
 }
 
 ISR(USART_R_DRE_vect) //Wireless_R_USART 
