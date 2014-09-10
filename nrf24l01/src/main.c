@@ -118,10 +118,10 @@ ISR(TCD0_OVF_vect)
             }
             else
             {
-	            Buf_Tx_R[i][1] = 0;
-	            Buf_Tx_R[i][2] = 0;
-	            Buf_Tx_R[i][3] = 0;
-	            Buf_Tx_R[i][4] = 0;
+	            Buf_Tx_R[i][1] = 1;
+	            Buf_Tx_R[i][2] = 2;
+	            Buf_Tx_R[i][3] = 3;
+	            Buf_Tx_R[i][4] = 4;
 	            Buf_Tx_R[i][5] = 0;
 	            Buf_Tx_R[i][6] = 0;
 	            Buf_Tx_R[i][7] = 0;
