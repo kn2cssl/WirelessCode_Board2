@@ -105,7 +105,8 @@ ISR(TCD0_OVF_vect)
             if(pck_timeout[i]<=600)
             
             {
-	            Buf_Tx_R[i][1] = 0;
+	            Buf_Tx_R[i][0] = i;
+			    Buf_Tx_R[i][1] = 0;
 	            Buf_Tx_R[i][2] =1;
 	            Buf_Tx_R[i][3] = 0;
 	            Buf_Tx_R[i][4] = 1;
@@ -118,7 +119,8 @@ ISR(TCD0_OVF_vect)
             }
             else
             {
-	            Buf_Tx_R[i][1] = 1;
+	            Buf_Tx_R[i][0] = i;
+				Buf_Tx_R[i][1] = 1;
 	            Buf_Tx_R[i][2] = 2;
 	            Buf_Tx_R[i][3] = 3;
 	            Buf_Tx_R[i][4] = 4;
@@ -128,6 +130,7 @@ ISR(TCD0_OVF_vect)
 	            Buf_Tx_R[i][8] = 0;
 	            Buf_Tx_R[i][9] = 0;
 	            Buf_Tx_R[i][10] = 0;
+				LED_Orange_PORT.OUTTGL = LED_Orange_PIN_bm;
             }
         }
     }
@@ -208,6 +211,7 @@ ISR(PRX_L)
 ISR(USART_R_RXC_vect) 
 {
     GetNewData(USARTC0_DATA);
+	wdt_reset();
 	LED_Red_PORT.OUTTGL = LED_Red_PIN_bm;
 }
 
@@ -231,5 +235,5 @@ ISR(USART_M_DRE_vect)
 }
 ISR(USART_M_RXC_vect)//usart test
 {
-	LED_Orange_PORT.OUTTGL   = LED_Orange_PIN_bm;
+	
 }
