@@ -211,7 +211,7 @@ static void GetNewData(uint8_t data)
 	}
 }
 
-void SendNewData()
+void SendNewData(void)
 {
 	Send_cnt = 0;
 	
@@ -232,7 +232,7 @@ void SendNewData()
 	
 }
 
-void SendData()
+void SendData(void)
 {
 	Send_cnt = 0;
 	

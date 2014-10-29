@@ -20,7 +20,8 @@ char str[40];
 uint8_t count;
 uint8_t flg;
 float P_temp,I_temp,D_temp,P,I,D,a=0,ki=0,kp=0.2,kd=0.07,M1,M1_temp;//ki=1.34,kp=1,kd=0.02,;
-
+int16_t M3RPM;
+int motor_show;
 uint16_t pck_timeout[Max_Robot];	
 
 int main (void)
@@ -107,7 +108,7 @@ ISR(TCD0_OVF_vect)
             {
 	            Buf_Tx_R[i][0] = i;
 			    Buf_Tx_R[i][1] = 0;
-	            Buf_Tx_R[i][2] =1;
+	            Buf_Tx_R[i][2] = 1;
 	            Buf_Tx_R[i][3] = 0;
 	            Buf_Tx_R[i][4] = 1;
 	            Buf_Tx_R[i][5] = 0;
@@ -174,6 +175,36 @@ ISR(PRX_R)
 		//LED_Green_L_PORT.OUTTGL = LED_Green_L_PIN_bm;
         NRF24L01_R_Flush_TX();
     }
+	
+//***********************sending data for experiment*******************************************//
+																							   //
+		if(Menu_PORT.IN & Menu_Side_Select_PIN_bm)											   //
+		{																					   //
+			count = sprintf(str,"%d,%d\r",													   //
+			((Buf_Rx_R[0][1+(Menu_Num*2)]<<8)&0x0ff00)|(Buf_Rx_R[0][0+(Menu_Num*2)]&0x00ff),   //
+			((Buf_Rx_R[0][9+(Menu_Num*2)]<<8)&0x0ff00)|(Buf_Rx_R[0][8+(Menu_Num*2)]&0x00ff));  //
+																							   //
+			for (uint8_t i=0;i<count;i++)													   //
+			usart_putchar(&USARTD0,str[i]);													   //
+		}																					   //
+		else																				   //
+		{																					   //
+			count = sprintf(str,"%d,%d,%d,%d,",												   //
+			((int)(Buf_Rx_R[0][9]<<8) & 0xff00) | ((int)(Buf_Rx_R[0][8]) & 0x0ff),			   //
+			((int)(Buf_Rx_R[0][11]<<8) & 0xff00) | ((int)(Buf_Rx_R[0][10]) & 0x0ff),		   //
+			((int)(Buf_Rx_R[0][13]<<8) & 0xff00) | ((int)(Buf_Rx_R[0][12]) & 0x0ff),		   //
+			((int)(Buf_Rx_R[0][15]<<8) & 0xff00) | ((int)(Buf_Rx_R[0][14]) & 0x0ff));		   //
+			for (uint8_t i=0;i<count;i++)													   //
+			usart_putchar(&USARTD0,str[i]);													   //
+																							   //
+			count = sprintf(str,"%d,%d,%d\r",(int)(kp*100),(int)(ki*100),(int)(kd*100));	   //
+																							   //
+			for (uint8_t i=0;i<count;i++)													   //
+			usart_putchar(&USARTD0,str[i]);													   //
+		}																					   //
+//*********************************************************************************************//
+	
+	
 }
 
 ISR(PRX_L)
@@ -225,7 +256,7 @@ ISR(USART_L_RXC_vect)
     
 
 }
-ISR(USART_L_DRE_vect) //Wireless_R_USART
+ISR(USART_L_DRE_vect) //Wireless_L_USART
 {
 
 }
@@ -235,5 +266,82 @@ ISR(USART_M_DRE_vect)
 }
 ISR(USART_M_RXC_vect)//usart test
 {
+		char data;
+		data=USARTD0_DATA;
+
+
+		switch (data)
+		{
+			case 'p':
+			kp=kp+0.01;
+			count = sprintf(str,"kp: %d\r",(int)(kp*100));
+			for (uint8_t i=0;i<count;i++)
+			usart_putchar(&USARTD0,str[i]);
+			break;
+			case 'o':
+			ki=ki+0.05;
+			count = sprintf(str,"ki: %d\r",(int)(ki*100));
+			for (uint8_t i=0;i<count;i++)
+			usart_putchar(&USARTD0,str[i]);
+			break;
+			case 'i':
+			kd=kd+0.01;
+			count = sprintf(str,"kd: %d\r",(int)(kd*100));
+			for (uint8_t i=0;i<count;i++)
+			usart_putchar(&USARTD0,str[i]);
+			break;
+			case 'l':
+			kp=kp-0.01;
+			count = sprintf(str,"kp: %d\r",(int)(kp*100));
+			for (uint8_t i=0;i<count;i++)
+			usart_putchar(&USARTD0,str[i]);
+			break;
+			case 'k':
+			ki=ki-0.05;
+			count = sprintf(str,"ki: %d\r",(int)(ki*100));
+			for (uint8_t i=0;i<count;i++)
+			usart_putchar(&USARTD0,str[i]);
+			break;
+			case 'j':
+			kd=kd-0.01;
+			count = sprintf(str,"kd: %d\r",(int)(kd*100));
+			for (uint8_t i=0;i<count;i++)
+			usart_putchar(&USARTD0,str[i]);
+			break;
+			
+			case 'w':
+			M3RPM+=10;
+			Buf_Tx_R[0][7] = (char)((M3RPM>>8) & 0x0ff) ;
+			Buf_Tx_R[0][8] = (char)(M3RPM & 0x0ff) ;
+			count = sprintf(str,"M3RPM: %d\r",M3RPM);
+			for (uint8_t i=0;i<count;i++)
+			usart_putchar(&USARTD0,str[i]);
+			break;
+			
+			case 's':
+			M3RPM-=10;
+			Buf_Tx_R[0][7] = (M3RPM>>8) & 0x0ff ;
+			Buf_Tx_R[0][8] = M3RPM & 0x0ff ;
+			count = sprintf(str,"M3RPM: %d\r",M3RPM);
+			for (uint8_t i=0;i<count;i++)
+			usart_putchar(&USARTD0,str[i]);
+			break;
+			
+			case '1':
+			motor_show = 1 ;
+			break;
+			
+			case '2':
+			motor_show = 2 ;
+			break;
+			
+			case '3':
+			motor_show = 3 ;
+			break;
+			
+			case '4':
+			motor_show = 4 ;
+			break;
+		};
 	
 }
