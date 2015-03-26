@@ -122,17 +122,17 @@ ISR(TCD0_OVF_vect)
 	Buff_L[0]='L';
 	for (int i = 1 ; i < 11 ; i++)
 	{
-		Buff_L[i] = Buf_Tx_R[0][i] ;
+		Buff_L[i] = Buf_Tx_R[6][i] ;
 	}
 
 	for (int i = 1 ; i < 11 ; i++)
 	{
-		Buff_L[i+10] = Buf_Tx_R[1][i] ;
+		Buff_L[i+10] = Buf_Tx_R[7][i] ;
 	}
 	
 	for (int i = 1 ; i < 11 ; i++)
 	{
-		Buff_L[i+20] = Buf_Tx_R[2][i] ;
+		Buff_L[i+20] = Buf_Tx_R[8][i] ;
 	}
 
 	Buff_R[0]='L';
