@@ -45,9 +45,9 @@
 //char Address_P1[5] = { 0xc7, 0xd3, 0xf0, 0x35, 0x77};
 //char Address_P0[5] = { 0x11, 0x22, 0x33, 0x44, 0x55};
 	
-char Address_R_P2[5] = { 0x19, 0x22, 0x33, 0x44, 0x55};
-char Address_R_P1[5] = { 0x18, 0x22, 0x33, 0x44, 0x55};
-char Address_R_P0[5] = { 0x17, 0x22, 0x33, 0x44, 0x55};
+char Address_R_P2[5] = { 0x13, 0x22, 0x33, 0x44, 0x55};
+char Address_R_P1[5] = { 0x12, 0x22, 0x33, 0x44, 0x55};
+char Address_R_P0[5] = { 0x11, 0x22, 0x33, 0x44, 0x55};
 
 #include "nrf24l01_R.h"
 
@@ -355,7 +355,7 @@ char *Address, char Address_Width, char Size_Payload, char Tx_Power)
 	// Enable Enhanced ShockBurst
 	NRF24L01_R_Set_ShockBurst(_ShockBurst_OFF);
 	NRF24L01_R_WriteReg(W_REGISTER | EN_AA, 0x00);
-	NRF24L01_R_WriteReg(W_REGISTER | SETUP_RETR, 0x2f);
+	NRF24L01_R_WriteReg(W_REGISTER | SETUP_RETR, 0x2C);
 	//NRF24L01_L_WriteReg(W_REGISTER | FEATURE, 0x02);  //
 	
 	// RF output power in TX mode = 0dBm (Max.)

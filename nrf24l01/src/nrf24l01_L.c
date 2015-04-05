@@ -37,9 +37,9 @@
  Please report any bug and / or solution you find.
 */
 
-char Address_L_P2[5] = { 0x1C, 0x22, 0x33, 0x44, 0x55};
-char Address_L_P1[5] = { 0x1B, 0x22, 0x33, 0x44, 0x55};
-char Address_L_P0[5] = { 0x1A, 0x22, 0x33, 0x44, 0x55};
+char Address_L_P2[5] = { 0x16, 0x22, 0x33, 0x44, 0x55};
+char Address_L_P1[5] = { 0x15, 0x22, 0x33, 0x44, 0x55};
+char Address_L_P0[5] = { 0x14, 0x22, 0x33, 0x44, 0x55};
 
 #include "NRF24L01_L.h"
 
@@ -346,7 +346,7 @@ char *Address, char Address_Width, char Size_Payload, char Tx_Power) {
 	// Enable Enhanced ShockBurst
 	NRF24L01_L_Set_ShockBurst(_ShockBurst_OFF);
 	NRF24L01_L_WriteReg(W_REGISTER | EN_AA, 0x00);
-	NRF24L01_L_WriteReg(W_REGISTER | SETUP_RETR, 0x2f);
+	NRF24L01_L_WriteReg(W_REGISTER | SETUP_RETR, 0x2C);
 	//NRF24L01_L_WriteReg(W_REGISTER | FEATURE, 0x02);  //
 	
 	// RF output power in TX mode = 0dBm (Max.)
